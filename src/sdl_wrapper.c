@@ -1,4 +1,5 @@
 #include "sdl_wrapper.h"
+#include <stdio.h>
 
 
 int Init(Context *ctx) {
@@ -40,11 +41,12 @@ void Term(Context *ctx) {
 
 
 void set_pixel(Context *ctx, int x, int y, int r, int g, int b) {
-    int offset = y * (ctx->pitch / sizeof(Uint32)) + x;
-    *((char*)ctx->pixels + offset) = 255;
-    *((char*)ctx->pixels + offset + 1) = b;
-    *((char*)ctx->pixels + offset + 2) = g;
-    *((char*)ctx->pixels + offset + 3) = r;
+    int offset = (y * ctx->width + x) * 4;
+    char *data = (char*)ctx->pixels;
+    *(data + offset) = r;
+    *(data + offset + 1) = g;
+    *(data + offset + 2) = b;
+    *(data + offset + 3) = 255;
 }
 
 
