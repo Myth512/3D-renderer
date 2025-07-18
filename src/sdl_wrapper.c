@@ -23,12 +23,6 @@ int Init(Context *ctx) {
         SDL_Log("SDL_CreateRenderer() Error: ", SDL_GetError());
         return 0;
     }
-
-    ctx->texture = SDL_CreateTexture(ctx->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, ctx->width, ctx->height);
-    if (!ctx->texture) {
-        SDL_Log("SDL_CreateTexture() Error: ", SDL_GetError());
-        return 0;
-    }
     return 1;
 }
 
@@ -40,28 +34,19 @@ void Term(Context *ctx) {
 }
 
 
+void clear(Context *ctx) {
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(ctx->renderer);
+}
+
+
 void set_pixel(Context *ctx, int x, int y, int r, int g, int b) {
-    int offset = (y * ctx->width + x) * 4;
-    char *data = (char*)ctx->pixels;
-    *(data + offset) = r;
-    *(data + offset + 1) = g;
-    *(data + offset + 2) = b;
-    *(data + offset + 3) = 255;
-}
-
-
-void lock(Context *ctx) {
-    SDL_LockTexture(ctx->texture, NULL, &ctx->pixels, &ctx->pitch);
-}
-
-
-void unlock(Context *ctx) {
-    SDL_UnlockTexture(ctx->texture);
+    SDL_SetRenderDrawColor(ctx->renderer, r, g, b, 255);
+    SDL_RenderPoint(ctx->renderer, x, y);
 }
 
 
 void render(Context *ctx) {
-    SDL_RenderTexture(ctx->renderer, ctx->texture, NULL, NULL);
     SDL_RenderPresent(ctx->renderer);
 }
 

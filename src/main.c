@@ -5,16 +5,76 @@
 #include "sdl_wrapper.h"
 #include "render.h"
 
-
 int main(int argc, char* argv[]) {
     Context ctx;
     Init(&ctx);
-    lock(&ctx);
-    draw_line(&ctx, 200, 300, 100, 100, 255, 0, 0);
-    unlock(&ctx);
-    render(&ctx);
 
-    getchar();
+
+    Camera camera = {0};
+    camera.rotation = (Vec2){0.2, 0};
+    Object object;
+    object.posistion = (Vec3){5, 0, 0};
+    init_mesh(&object.mesh, 8, 12);
+    Vertex v1, v2, v3, v4, v5, v6, v7, v8;
+
+    v1.position = (Vec3){.x = -1, .y = -1, .z = -1};
+    v2.position = (Vec3){.x = -1, .y = -1, .z = 1};
+    v3.position = (Vec3){.x = -1, .y = 1, .z = 1};
+    v4.position = (Vec3){.x = -1, .y = 1, .z = -1};
+    v5.position = (Vec3){.x = 1, .y = -1, .z = -1};
+    v6.position = (Vec3){.x = 1, .y = -1, .z = 1};
+    v7.position = (Vec3){.x = 1, .y = 1, .z = 1};
+    v8.position = (Vec3){.x = 1, .y = 1, .z = -1};
+
+    add_vertex(&object.mesh, v1);
+    add_vertex(&object.mesh, v2);
+    add_vertex(&object.mesh, v3);
+    add_vertex(&object.mesh, v4);
+    add_vertex(&object.mesh, v5);
+    add_vertex(&object.mesh, v6);
+    add_vertex(&object.mesh, v7);
+    add_vertex(&object.mesh, v8);
+
+    Face f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12;
+    f1 = (Face){.v1 = 0, .v2 = 1, .v3 = 2};
+    f2 = (Face){.v1 = 0, .v2 = 2, .v3 = 3};
+    f3 = (Face){.v1 = 0, .v2 = 1, .v3 = 5};
+    f4 = (Face){.v1 = 0, .v2 = 4, .v3 = 5};
+    f5 = (Face){.v1 = 1, .v2 = 5, .v3 = 6};
+    f6 = (Face){.v1 = 1, .v2 = 2, .v3 = 6};
+    f7 = (Face){.v1 = 0, .v2 = 4, .v3 = 7};
+    f8 = (Face){.v1 = 0, .v2 = 3, .v3 = 7};
+    f9 = (Face){.v1 = 2, .v2 = 3, .v3 = 7};
+    f10 = (Face){.v1 = 2, .v2 = 6, .v3 = 7};
+    f11 = (Face){.v1 = 4, .v2 = 5, .v3 = 6};
+    f12 = (Face){.v1 = 4, .v2 = 6, .v3 = 7};
+
+
+    add_face(&object.mesh, f1);
+    add_face(&object.mesh, f2);
+    add_face(&object.mesh, f3);
+    add_face(&object.mesh, f4);
+    add_face(&object.mesh, f5);
+    add_face(&object.mesh, f6);
+    add_face(&object.mesh, f7);
+    add_face(&object.mesh, f8);
+    add_face(&object.mesh, f9);
+    add_face(&object.mesh, f10);
+    add_face(&object.mesh, f11);
+    add_face(&object.mesh, f12);
+
+
+
+    while (1) {
+        clear(&ctx);
+        render_object(&camera, &ctx, &object);
+
+        render(&ctx);
+
+        getchar();
+
+        camera.postition.x += 1;
+    }
 
     return 0;
 }

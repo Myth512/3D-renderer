@@ -13,8 +13,4 @@ void render(Context *ctx);
 
 void set_pixel(Context *ctx, int x, int y, int r, int g, int b);
 
-void lock(Context *ctx);
-
-void unlock(Context *ctx);
-
 #endif
