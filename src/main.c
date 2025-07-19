@@ -7,9 +7,9 @@
 #include "vec.h"
 
 Vertex vertices[] = {
-    {.position = (Vec3){-1, -1, -1}, .color = COLOR_BLACK},
-    {.position = (Vec3){-1, -1,  1}, .color = COLOR_BLUE},
-    {.position = (Vec3){-1,  1,  1}, .color = COLOR_CYAN},
+    {.position = (Vec3){-1, -1, -1}, .color = COLOR_RED},
+    {.position = (Vec3){-1, -1,  1}, .color = COLOR_RED},
+    {.position = (Vec3){-1,  1,  1}, .color = COLOR_RED},
     {.position = (Vec3){-1,  1, -1}, .color = COLOR_GREEN},
     {.position = (Vec3){ 1, -1, -1}, .color = COLOR_MAGENTA},
     {.position = (Vec3){ 1, -1,  1}, .color = COLOR_RED},
@@ -37,8 +37,7 @@ int main(int argc, char* argv[]) {
     Init(&ctx);
 
 
-    Camera camera = {0};
-    camera.rotation = (Vec2){0.2, 0};
+    Camera camera = {.fov = 45, .postition = (Vec3){0, 0, 0}};
     Object object = {.posistion = (Vec3){5, 0, 0}};
     init_mesh(&object.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
 
@@ -56,16 +55,16 @@ int main(int argc, char* argv[]) {
 
         const bool *keyboard_state = SDL_GetKeyboardState(NULL);
         if (keyboard_state[SDL_SCANCODE_W]) {
-            camera.postition.x += 1;
+            camera.postition.x += 0.3;
         }
         if (keyboard_state[SDL_SCANCODE_S]) {
-            camera.postition.x -= 1;
+            camera.postition.x -= 0.3;
         }
         if (keyboard_state[SDL_SCANCODE_A]) {
-            camera.postition.z += 1;
+            camera.postition.z += 0.3;
         }
         if (keyboard_state[SDL_SCANCODE_D]) {
-            camera.postition.z -= 1;
+            camera.postition.z -= 0.3;
         }
 
         if (keyboard_state[SDL_SCANCODE_UP]) {
@@ -75,17 +74,21 @@ int main(int argc, char* argv[]) {
             camera.rotation.y -= 0.1;
         }
         if (keyboard_state[SDL_SCANCODE_LEFT]) {
-            camera.rotation.x += 0.1;
+            camera.rotation.x += 0.03;
         }
         if (keyboard_state[SDL_SCANCODE_RIGHT]) {
-            camera.rotation.x -= 0.1;
+            camera.rotation.x -= 0.03;
         }
 
         clear(&ctx);
 
-        render_background(&camera, &ctx);
+        // render_background(&camera, &ctx);
 
         render_object(&camera, &ctx, &object);
+        // Vec2 p0 = project(&camera, (Vec3){2, 0, 0});
+        // printf("final %f %f\n", p0.x, p0.y);
+
+        // draw_line(&ctx, p0, p0, COLOR_RED);
 
         render(&ctx);
 

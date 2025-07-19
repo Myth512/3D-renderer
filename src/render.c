@@ -1,5 +1,7 @@
-#include "sdl_wrapper.h"
 #include <stdlib.h>
+#include <stdio.h>
+
+#include "sdl_wrapper.h"
 #include "render.h"
 #include "math.h"
 
@@ -85,17 +87,66 @@ void draw_line_gradient(Context *ctx, Vec2 p0, Vec2 p1, Color c0, Color c1) {
 }
 
 
+double deg_to_rad(double angle) {
+    return angle / 180.0 * 3.14;
+}
+
+
+Vec3 rotate_x(Vec3 point, double angle) {
+    double s = sin(angle);
+    double c = cos(angle);
+    
+    double z = point.z * c - point.y * s;
+    double y = point.z * s + point.y * c;
+
+    return (Vec3){point.x, y, z};
+}
+
+
+Vec3 rotate_y(Vec3 point, double angle) {
+    double s = sin(angle);
+    double c = cos(angle);
+    
+    double x = point.x * c - point.z * s;
+    double z = point.x * s + point.z * c;
+
+    return (Vec3){x, point.y, z};
+}
+
+
+Vec3 rotate_z(Vec3 point, double angle) {
+    double s = sin(angle);
+    double c = cos(angle);
+    
+    double x = point.x * c - point.y * s;
+    double y = point.x * s + point.y * c;
+
+    return (Vec3){x, y, point.z};
+}
+
+
+double interpolate(double x, double x0, double x1, double y0, double y1) {
+    double t = y1 - y0;
+    double p = (x - x0) / (x1 - x0);
+    return y0 + t * p;
+}
+
+
 Vec2 project(Camera *camera, Vec3 point) {
-    // double angle = atan2((camera->postition.z - point.z), (camera->postition.x - point.x));
-    // double angle2 = atan2((camera->postition.y - point.y), (camera->postition.x - point.x));
-    double angle = atan2(point.z, point.x);
-    double angle2 = atan2(point.y, point.x);
-    Vec2 res;
-    res.x = camera->rotation.x - angle;
-    res.y = camera->rotation.y - angle2;
-    res.x = (res.x + 1) * 640 / 2;
-    res.y = (res.y + 1) * 480 / 2;
-    return res;
+    Vec3 rel = Vec3_sub(camera->postition, point);
+    rel = rotate_y(rel, -camera->rotation.x);
+    rel = rotate_z(rel, camera->rotation.y);
+
+    double fov_rad = deg_to_rad(camera->fov);
+
+    double f = 1.0f / tan(fov_rad / 2);
+
+    double x = rel.z / rel.x * f;
+    double y = rel.y / rel.x * f;
+
+    x = (x + 1) * 0.5 * 640;
+    y = (y + 1) * 0.5 * 480;
+    return (Vec2){x, y};
 }
 
 
@@ -107,8 +158,8 @@ void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count) {
 
 
 void render_background(Camera *camera, Context *ctx) {
-    Color sky_color = (Color){135, 206, 235};
-    Color floor_color = (Color){128, 128, 128};
+    Color sky_color = (Color){117, 187, 254};
+    Color floor_color = (Color){37, 37, 37};
 
     double angle = atan(camera->rotation.y);
     double pos = (angle + 1) * 480 / 2;

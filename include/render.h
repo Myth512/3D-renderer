@@ -39,6 +39,8 @@ Vec2 project(Camera *camera, Vec3 point);
 
 void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count);
 
+double interpolate(double x, double x0, double x1, double y0, double y1);
+
 void render_background(Camera *camera, Context *ctx);
 
 void render_object(Camera *camera, Context *ctx, Object *object);

@@ -14,4 +14,6 @@ typedef struct {
 
 Vec3 Vec3_add(Vec3 a, Vec3 b);
 
+Vec3 Vec3_sub(Vec3 a, Vec3 b);
+
 #endif
