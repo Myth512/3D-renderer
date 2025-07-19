@@ -2,11 +2,7 @@
 #include <stdlib.h>
 #include "render.h"
 #include "math.h"
-
-
-Vec3 Vec3_add(Vec3 a, Vec3 b) {
-    return (Vec3){a.x + b.x, a.y + b.y, a.z + b.z};
-}
+#include "vec.h"
 
 
 void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c) {
