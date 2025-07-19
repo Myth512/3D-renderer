@@ -1,16 +1,7 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-typedef struct {
-    double x;
-    double y;
-} Vec2;
-
-typedef struct {
-    double x;
-    double y;
-    double z;
-} Vec3;
+#include "vec.h"
 
 typedef struct {
     Vec3 postition;
@@ -31,7 +22,6 @@ typedef struct {
 
 typedef struct {
     Vertex *vertices;
-    int vertex_count;
     Face *faces;
     int face_count;
 } Mesh;
@@ -47,11 +37,9 @@ void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c);
 
 Vec2 project(Camera *camera, Vec3 point);
 
-void init_mesh(Mesh *mesh, int vertex_count, int face_count);
+void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count);
 
-void add_vertex(Mesh *mesh, Vertex vertex);
-
-void add_face(Mesh *mesh, Face face);
+void render_background(Camera *camera, Context *ctx);
 
 void render_object(Camera *camera, Context *ctx, Object *object);
 

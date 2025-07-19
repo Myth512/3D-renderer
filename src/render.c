@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "render.h"
 #include "math.h"
-#include "vec.h"
 
 
 void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c) {
@@ -87,8 +86,10 @@ void draw_line_gradient(Context *ctx, Vec2 p0, Vec2 p1, Color c0, Color c1) {
 
 
 Vec2 project(Camera *camera, Vec3 point) {
-    double angle = atan((camera->postition.z - point.z) / (camera->postition.x - point.x));
-    double angle2 = atan((camera->postition.y - point.y) / (camera->postition.x - point.x));
+    // double angle = atan2((camera->postition.z - point.z), (camera->postition.x - point.x));
+    // double angle2 = atan2((camera->postition.y - point.y), (camera->postition.x - point.x));
+    double angle = atan2(point.z, point.x);
+    double angle2 = atan2(point.y, point.x);
     Vec2 res;
     res.x = camera->rotation.x - angle;
     res.y = camera->rotation.y - angle2;
@@ -98,21 +99,33 @@ Vec2 project(Camera *camera, Vec3 point) {
 }
 
 
-void init_mesh(Mesh *mesh, int vertex_count, int face_count) {
-    mesh->vertex_count = 0;
-    mesh->face_count = 0;
-    mesh->vertices = malloc(vertex_count * sizeof(Vertex));
-    mesh->faces = malloc(face_count * sizeof(Face));
+void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count) {
+    mesh->face_count = face_count;
+    mesh->vertices = vertices; 
+    mesh->faces = faces; 
 }
 
 
-void add_vertex(Mesh *mesh, Vertex vertex) {
-    mesh->vertices[mesh->vertex_count++] = vertex;
-}
+void render_background(Camera *camera, Context *ctx) {
+    Color sky_color = (Color){135, 206, 235};
+    Color floor_color = (Color){128, 128, 128};
+
+    double angle = atan(camera->rotation.y);
+    double pos = (angle + 1) * 480 / 2;
+
+    for (int y = 0; y < pos; y++) {
+        for (int x = 0; x <= 640; x++) {
+            set_pixel(ctx, x, y, sky_color);
+        }
+    }
+
+    for (int y = pos; y < 480; y++) {
+        for (int x = 0; x < 640; x++) {
+            set_pixel(ctx, x, y, floor_color);
+        }
+    }
 
 
-void add_face(Mesh *mesh, Face face) {
-    mesh->faces[mesh->face_count++] = face;
 }
 
 
