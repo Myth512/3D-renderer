@@ -8,13 +8,13 @@
 
 Vertex vertices[] = {
     {.position = (Vec3){-1, -1, -1}, .color = COLOR_RED},
-    {.position = (Vec3){-1, -1,  1}, .color = COLOR_RED},
+    {.position = (Vec3){-1, -1,  1}, .color = COLOR_GREEN},
     {.position = (Vec3){-1,  1,  1}, .color = COLOR_RED},
-    {.position = (Vec3){-1,  1, -1}, .color = COLOR_GREEN},
-    {.position = (Vec3){ 1, -1, -1}, .color = COLOR_MAGENTA},
-    {.position = (Vec3){ 1, -1,  1}, .color = COLOR_RED},
-    {.position = (Vec3){ 1,  1,  1}, .color = COLOR_YELLOW},
-    {.position = (Vec3){ 1,  1, -1}, .color = COLOR_WHITE}
+    {.position = (Vec3){-1,  1, -1}, .color = COLOR_BLUE},
+    {.position = (Vec3){ 1, -1, -1}, .color = COLOR_GREEN},
+    {.position = (Vec3){ 1, -1,  1}, .color = COLOR_BLUE},
+    {.position = (Vec3){ 1,  1,  1}, .color = COLOR_GREEN},
+    {.position = (Vec3){ 1,  1, -1}, .color = COLOR_GREEN}
 };
 
 Face faces[] = {
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     Init(&ctx);
 
 
-    Camera camera = {.fov = 45, .postition = (Vec3){0, 0, 0}};
+    Camera camera = {.fov = 90, .postition = (Vec3){0, 0, 0}};
     Object object = {.posistion = (Vec3){5, 0, 0}};
     init_mesh(&object.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
 

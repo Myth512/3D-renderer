@@ -132,20 +132,23 @@ double interpolate(double x, double x0, double x1, double y0, double y1) {
 }
 
 
-Vec2 project(Camera *camera, Vec3 point) {
+Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
     Vec3 rel = Vec3_sub(camera->postition, point);
     rel = rotate_y(rel, -camera->rotation.x);
     rel = rotate_z(rel, camera->rotation.y);
 
     double fov_rad = deg_to_rad(camera->fov);
 
-    double f = 1.0f / tan(fov_rad / 2);
+    double a = (double)ctx->width / ctx->height;
 
-    double x = rel.z / rel.x * f;
-    double y = rel.y / rel.x * f;
+    double fx = 1.0f / tan(fov_rad / 2);
+    double fy = a * fx;
 
-    x = (x + 1) * 0.5 * 640;
-    y = (y + 1) * 0.5 * 480;
+    double x = rel.z / rel.x * fx;
+    double y = rel.y / rel.x * fy;
+
+    x = (x + 1) * 0.5 * ctx->width;
+    y = (y + 1) * 0.5 * ctx->height;
     return (Vec2){x, y};
 }
 
@@ -190,9 +193,9 @@ void render_object(Camera *camera, Context *ctx, Object *object) {
         Vec3 t2 = Vec3_add(v2.position, object->posistion);
         Vec3 t3 = Vec3_add(v3.position, object->posistion);
 
-        Vec2 p1 = project(camera, t1);
-        Vec2 p2 = project(camera, t2);
-        Vec2 p3 = project(camera, t3);
+        Vec2 p1 = project(ctx, camera, t1);
+        Vec2 p2 = project(ctx, camera, t2);
+        Vec2 p3 = project(ctx, camera, t3);
 
         draw_line_gradient(ctx, p1, p2, v1.color, v2.color);
         draw_line_gradient(ctx, p1, p3, v1.color, v3.color);
