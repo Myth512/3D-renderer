@@ -40,8 +40,8 @@ void clear(Context *ctx) {
 }
 
 
-void set_pixel(Context *ctx, int x, int y, int r, int g, int b) {
-    SDL_SetRenderDrawColor(ctx->renderer, r, g, b, 255);
+void set_pixel(Context *ctx, double x, double y, Color c) {
+    SDL_SetRenderDrawColor(ctx->renderer, c.r, c.g, c.b, 255);
     SDL_RenderPoint(ctx->renderer, x, y);
 }
 

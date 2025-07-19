@@ -17,14 +17,22 @@ int main(int argc, char* argv[]) {
     init_mesh(&object.mesh, 8, 12);
     Vertex v1, v2, v3, v4, v5, v6, v7, v8;
 
-    v1.position = (Vec3){.x = -1, .y = -1, .z = -1};
+    v1.position = (Vec3){.x = -1, .y = -1, .z = -1,};
+    v1.color = (Color){.r = 0, .g = 0, .b = 0};
     v2.position = (Vec3){.x = -1, .y = -1, .z = 1};
+    v2.color = (Color){.r = 0, .g = 0, .b = 255};
     v3.position = (Vec3){.x = -1, .y = 1, .z = 1};
+    v3.color = (Color){.r = 0, .g = 255, .b = 0};
     v4.position = (Vec3){.x = -1, .y = 1, .z = -1};
+    v4.color = (Color){.r = 0, .g = 255, .b = 255};
     v5.position = (Vec3){.x = 1, .y = -1, .z = -1};
+    v5.color = (Color){.r = 255, .g = 0, .b = 0};
     v6.position = (Vec3){.x = 1, .y = -1, .z = 1};
+    v6.color = (Color){.r = 255, .g = 0, .b = 255};
     v7.position = (Vec3){.x = 1, .y = 1, .z = 1};
+    v7.color = (Color){.r = 255, .g = 255, .b = 0};
     v8.position = (Vec3){.x = 1, .y = 1, .z = -1};
+    v8.color = (Color){.r = 255, .g = 255, .b = 255};
 
     add_vertex(&object.mesh, v1);
     add_vertex(&object.mesh, v2);
@@ -64,16 +72,52 @@ int main(int argc, char* argv[]) {
     add_face(&object.mesh, f12);
 
 
+    bool running = true;
+    SDL_Event ev;
 
-    while (1) {
+    while (running) {
+        while (SDL_PollEvent(&ev) != 0) {
+            switch(ev.type) {
+                case SDL_EVENT_QUIT:
+                    running = false;
+                    break;
+            }
+        }
+
+        const bool *keyboard_state = SDL_GetKeyboardState(NULL);
+        if (keyboard_state[SDL_SCANCODE_W]) {
+            camera.postition.x += 1;
+        }
+        if (keyboard_state[SDL_SCANCODE_S]) {
+            camera.postition.x -= 1;
+        }
+        if (keyboard_state[SDL_SCANCODE_A]) {
+            camera.postition.z += 1;
+        }
+        if (keyboard_state[SDL_SCANCODE_D]) {
+            camera.postition.z -= 1;
+        }
+
+        if (keyboard_state[SDL_SCANCODE_UP]) {
+            camera.rotation.x += 0.1;
+        }
+        if (keyboard_state[SDL_SCANCODE_DOWN]) {
+            camera.rotation.x -= 0.1;
+        }
+        if (keyboard_state[SDL_SCANCODE_LEFT]) {
+            camera.rotation.y += 0.1;
+        }
+        if (keyboard_state[SDL_SCANCODE_RIGHT]) {
+            camera.rotation.y -= 0.1;
+        }
+
         clear(&ctx);
+
         render_object(&camera, &ctx, &object);
 
         render(&ctx);
 
-        getchar();
-
-        camera.postition.x += 1;
+        SDL_Delay(33);
     }
 
     return 0;

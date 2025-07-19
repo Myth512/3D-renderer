@@ -2,6 +2,7 @@
 #define SDL_WRAPPER_H
 
 #include "context.h"
+#include "color.h"
 
 int Init(Context *ctx);
 
@@ -11,6 +12,6 @@ void clear(Context *ctx);
 
 void render(Context *ctx);
 
-void set_pixel(Context *ctx, int x, int y, int r, int g, int b);
+void set_pixel(Context *ctx, double x, double y, Color c);
 
 #endif

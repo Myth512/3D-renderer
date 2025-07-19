@@ -20,6 +20,7 @@ typedef struct {
 
 typedef struct {
     Vec3 position;
+    Color color;
 } Vertex;
 
 typedef struct {
@@ -42,7 +43,7 @@ typedef struct {
     Mesh mesh;
 } Object;
 
-void draw_line(Context *ctx, Vec2 p0, Vec2 p1, int r, int g, int b);
+void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c);
 
 Vec2 project(Camera *camera, Vec3 point);
 
