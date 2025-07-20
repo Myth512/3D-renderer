@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "sdl_wrapper.h"
 #include "render.h"
@@ -85,10 +86,13 @@ int main(int argc, char* argv[]) {
         // render_background(&camera, &ctx);
 
         render_object(&camera, &ctx, &object);
-        // Vec2 p0 = project(&camera, (Vec3){2, 0, 0});
-        // printf("final %f %f\n", p0.x, p0.y);
 
-        // draw_line(&ctx, p0, p0, COLOR_RED);
+        // Vec2 p0 = {100, 100};
+        // Vec2 p2 = {400, 450};
+        // Vec2 p1 = {100, 400};
+
+        // render_filled_polygon(&ctx, p0, p1, p2, COLOR_BLUE);
+        // render_polygon_outline(&ctx, p0, p1, p2, COLOR_RED);
 
         render(&ctx);
 

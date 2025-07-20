@@ -1,9 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "sdl_wrapper.h"
 #include "render.h"
-#include "math.h"
+
+
+static double min(double a, double b) {
+    return a < b ? a : b;
+}
+
+
+static double max(double a, double b) {
+    return a > b ? a : b;
+}
 
 
 void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c) {
@@ -183,6 +193,95 @@ void render_background(Camera *camera, Context *ctx) {
 }
 
 
+void render_polygon_outline(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+    draw_line(ctx, p0, p1, c);
+    draw_line(ctx, p0, p2, c);
+    draw_line(ctx, p1, p2, c);
+}
+
+
+static void draw_top_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+    double k0 = (p2.x - p0.x) / (p2.y - p0.y);
+    double k1 = (p2.x - p1.x) / (p2.y - p1.y);
+
+    if (k0 < k1) {
+        double tmp = k0;
+        k0 = k1;
+        k1 = tmp;
+    }
+
+    double x_left = p2.x;
+    double x_right = p2.x;
+
+    for (int y = p2.y; y > p0.y; y--) {
+        for (int x = x_left; x <= x_right; x++) {
+            set_pixel(ctx, x, y, c);
+        }
+        x_left -= k0;
+        x_right -= k1;
+    }
+}
+
+
+static void draw_botton_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+    double k0 = (p0.x - p1.x) / (p0.y - p1.y);
+    double k1 = (p0.x - p2.x) / (p0.y - p2.y);
+
+    if (k0 > k1) {
+        double tmp = k0;
+        k0 = k1;
+        k1 = tmp;
+    }
+
+    double x_left = p0.x;
+    double x_right = p0.x;
+
+    for (int y = p0.y; y < p2.y; y++) {
+        for (int x = x_left; x <= x_right; x++) {
+            set_pixel(ctx, x, y, c);
+        }
+        x_left += k0;
+        x_right += k1;
+    }
+}
+
+
+void render_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+    Vec2 tmp;
+    if (p0.y > p1.y) {
+        tmp = p0;
+        p0 = p1;
+        p1 = tmp;
+    }
+    if (p1.y > p2.y) {
+        tmp = p1;
+        p1 = p2;
+        p2 = tmp;
+    }
+    if (p0.y > p1.y) {
+        tmp = p0;
+        p0 = p1;
+        p1 = tmp;
+    }
+
+    if (p0.y == p1.y) {
+        draw_top_flat_triangle(ctx, p0, p1, p2, c);
+    } else if (p1.y == p2.y) {
+        draw_botton_flat_triangle(ctx, p0, p1, p2, c);
+    } else {
+        double k = (p0.y - p2.y) / (p0.x - p2.x);
+        double b = p0.y - k * p0.x;
+        
+        double x = isfinite(k) ? (p1.y - b) / k : p0.x;
+
+        Vec2 p3 = {x, p1.y};
+
+        draw_botton_flat_triangle(ctx, p0, p1, p3, c);
+        draw_top_flat_triangle(ctx, p1, p3, p2, c);
+    }
+}
+
+
 void render_object(Camera *camera, Context *ctx, Object *object) {
     for (int i = 0; i < object->mesh.face_count; i++) {
         Vertex v1 = object->mesh.vertices[object->mesh.faces[i].v1];
@@ -197,9 +296,11 @@ void render_object(Camera *camera, Context *ctx, Object *object) {
         Vec2 p2 = project(ctx, camera, t2);
         Vec2 p3 = project(ctx, camera, t3);
 
-        draw_line_gradient(ctx, p1, p2, v1.color, v2.color);
-        draw_line_gradient(ctx, p1, p3, v1.color, v3.color);
-        draw_line_gradient(ctx, p2, p3, v2.color, v3.color);
+        render_filled_polygon(ctx, p1, p2, p3, v1.color);
+        render_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
+        // draw_line_gradient(ctx, p1, p2, v1.color, v2.color);
+        // draw_line_gradient(ctx, p1, p3, v1.color, v3.color);
+        // draw_line_gradient(ctx, p2, p3, v2.color, v3.color);
     }
 
 }
