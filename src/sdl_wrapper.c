@@ -34,6 +34,41 @@ void Term(Context *ctx) {
 }
 
 
+void process_events(InputState *input) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event) != 0) {
+        switch(event.type) {
+            case SDL_EVENT_QUIT:
+                input->quit_requested=true;
+                break;
+            case SDL_EVENT_MOUSE_MOTION:
+                input->mouse_x_rel = event.motion.xrel;
+                input->mouse_y_rel = event.motion.yrel;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                if (event.button.button == SDL_BUTTON_LEFT)
+                    input->mouse_left = true;
+                else if (event.button.button == SDL_BUTTON_MIDDLE)
+                    input->mouse_middle = true;
+                else if (event.button.button == SDL_BUTTON_RIGHT)
+                    input->mouse_right = true;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                if (event.button.button == SDL_BUTTON_LEFT)
+                    input->mouse_left = false;
+                else if (event.button.button == SDL_BUTTON_MIDDLE)
+                    input->mouse_middle = false;
+                else if (event.button.button == SDL_BUTTON_RIGHT)
+                    input->mouse_right = false;
+                break;
+            case SDL_EVENT_MOUSE_WHEEL:
+                input->mouse_scroll = event.wheel.y;
+                break;
+        }
+    }
+}
+
+
 void clear(Context *ctx) {
     SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
     SDL_RenderClear(ctx->renderer);

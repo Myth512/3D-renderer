@@ -3,10 +3,13 @@
 
 #include "context.h"
 #include "color.h"
+#include "input.h"
 
 int Init(Context *ctx);
 
 void Term(Context *ctx);
+
+void process_events(InputState *input);
 
 void clear(Context *ctx);
 

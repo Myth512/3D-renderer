@@ -3,14 +3,7 @@
 
 #include "vec.h"
 
-typedef struct {
-    Vec3 postition;
-    Vec2 rotation;
-    double fov;
-} Camera;
-
-typedef struct {
-    Vec3 position;
+typedef struct { Vec3 position;
     Color color;
 } Vertex;
 

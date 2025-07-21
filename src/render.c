@@ -4,6 +4,7 @@
 
 #include "sdl_wrapper.h"
 #include "render.h"
+#include "camera.h"
 
 
 static double min(double a, double b) {
@@ -102,37 +103,6 @@ double deg_to_rad(double angle) {
 }
 
 
-Vec3 rotate_x(Vec3 point, double angle) {
-    double s = sin(angle);
-    double c = cos(angle);
-    
-    double z = point.z * c - point.y * s;
-    double y = point.z * s + point.y * c;
-
-    return (Vec3){point.x, y, z};
-}
-
-
-Vec3 rotate_y(Vec3 point, double angle) {
-    double s = sin(angle);
-    double c = cos(angle);
-    
-    double x = point.x * c - point.z * s;
-    double z = point.x * s + point.z * c;
-
-    return (Vec3){x, point.y, z};
-}
-
-
-Vec3 rotate_z(Vec3 point, double angle) {
-    double s = sin(angle);
-    double c = cos(angle);
-    
-    double x = point.x * c - point.y * s;
-    double y = point.x * s + point.y * c;
-
-    return (Vec3){x, y, point.z};
-}
 
 
 double interpolate(double x, double x0, double x1, double y0, double y1) {
@@ -143,9 +113,12 @@ double interpolate(double x, double x0, double x1, double y0, double y1) {
 
 
 Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
-    Vec3 rel = Vec3_sub(camera->postition, point);
+    Vec3 rel = Vec3_sub(point, camera->postition);
     rel = rotate_y(rel, -camera->rotation.x);
     rel = rotate_z(rel, camera->rotation.y);
+
+    if (rel.x < 0)
+        return (Vec2){-1, -1};
 
     double fov_rad = deg_to_rad(camera->fov);
 
@@ -156,6 +129,7 @@ Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
 
     double x = rel.z / rel.x * fx;
     double y = rel.y / rel.x * fy;
+    printf("here1 %f\n", rel.x);
 
     x = (x + 1) * 0.5 * ctx->width;
     y = (y + 1) * 0.5 * ctx->height;
@@ -296,7 +270,7 @@ void render_object(Camera *camera, Context *ctx, Object *object) {
         Vec2 p2 = project(ctx, camera, t2);
         Vec2 p3 = project(ctx, camera, t3);
 
-        render_filled_polygon(ctx, p1, p2, p3, v1.color);
+        // render_filled_polygon(ctx, p1, p2, p3, v1.color);
         render_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
         // draw_line_gradient(ctx, p1, p2, v1.color, v2.color);
         // draw_line_gradient(ctx, p1, p3, v1.color, v3.color);
