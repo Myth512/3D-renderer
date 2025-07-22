@@ -113,7 +113,7 @@ double interpolate(double x, double x0, double x1, double y0, double y1) {
 
 
 Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
-    Vec3 rel = Vec3_sub(point, camera->postition);
+    Vec3 rel = Vec3_sub(point, camera->position);
     rel = rotate_y(rel, -camera->rotation.x);
     rel = rotate_z(rel, camera->rotation.y);
 

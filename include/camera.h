@@ -4,7 +4,7 @@
 #include "vec.h"
 
 typedef struct {
-    Vec3 postition;
+    Vec3 position;
     Vec2 rotation;
     double fov;
 } Camera;

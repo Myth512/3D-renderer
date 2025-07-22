@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     Context ctx;
     Init(&ctx);
 
-    Camera camera = {.fov = 90, .postition = (Vec3){-5, 0, 0}};
+    Camera camera = {.fov = 90, .position = (Vec3){-5, 0, 0}};
     Object object = {.posistion = (Vec3){0, 0, -3}};
     Object object2 = {.posistion = (Vec3){0, 0, 2}};
     init_mesh(&object.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
