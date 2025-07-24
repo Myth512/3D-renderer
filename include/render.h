@@ -35,7 +35,7 @@ void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count);
 
 void draw_polygon_outline(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c);
 
-void draw_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c);
+void draw_filled_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c);
 
 void draw_object(Camera *camera, Context *ctx, Object *object);
 

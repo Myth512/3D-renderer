@@ -130,6 +130,15 @@ void draw_polygon_outline(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
 }
 
 
+Vec3 compute_barycentric_weights(Vec2 p, Vec2 a, Vec2 b, Vec2 c) {
+    double denominator = (b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y);
+    double alpha = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) / denominator;
+    double beta = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) / denominator;
+    double gamma = 1 - alpha - beta;
+    return (Vec3){alpha, beta, gamma};
+}
+
+
 static void draw_top_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
     double k0 = (p2.x - p0.x) / (p2.y - p0.y);
     double k1 = (p2.x - p1.x) / (p2.y - p1.y);
@@ -176,7 +185,7 @@ static void draw_botton_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, C
 }
 
 
-void draw_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+void draw_filled_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
     Vec2 tmp;
     if (p0.y > p1.y) {
         tmp = p0;
@@ -208,6 +217,100 @@ void draw_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
 
         draw_botton_flat_triangle(ctx, p0, p1, p3, c);
         draw_top_flat_triangle(ctx, p1, p3, p2, c);
+    }
+}
+
+
+static void draw_top_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
+    double k0 = (p2.x - p0.x) / (p2.y - p0.y);
+    double k1 = (p2.x - p1.x) / (p2.y - p1.y);
+
+    if (k0 < k1) {
+        double tmp = k0;
+        k0 = k1;
+        k1 = tmp;
+    }
+
+    double x_left = p2.x;
+    double x_right = p2.x;
+
+    for (int y = p2.y; y > p0.y; y--) {
+        for (int x = x_left; x <= x_right; x++) {
+            Vec3 w = compute_barycentric_weights((Vec2){x, y}, p0, p1, p2);
+            Color c = {
+                c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
+                c.g = c0.g * w.x + c1.g * w.y + c2.g * w.z,
+                c.b = c0.b * w.x + c1.b * w.y + c2.b * w.z,
+            };
+            draw_pixel(ctx, x, y, c);
+        }
+        x_left -= k0;
+        x_right -= k1;
+    }
+}
+
+
+static void draw_botton_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
+    double k0 = (p0.x - p1.x) / (p0.y - p1.y);
+    double k1 = (p0.x - p2.x) / (p0.y - p2.y);
+
+    if (k0 > k1) {
+        double tmp = k0;
+        k0 = k1;
+        k1 = tmp;
+    }
+
+    double x_left = p0.x;
+    double x_right = p0.x;
+
+    for (int y = p0.y; y < p2.y; y++) {
+        for (int x = x_left; x <= x_right; x++) {
+            Vec3 w = compute_barycentric_weights((Vec2){x, y}, p0, p1, p2);
+            Color c = {
+                c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
+                c.g = c0.g * w.x + c1.g * w.y + c2.g * w.z,
+                c.b = c0.b * w.x + c1.b * w.y + c2.b * w.z,
+            };
+            draw_pixel(ctx, x, y, c);
+        }
+        x_left += k0;
+        x_right += k1;
+    }
+}
+
+
+void draw_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
+    Vec2 tmp;
+    if (p0.y > p1.y) {
+        tmp = p0;
+        p0 = p1;
+        p1 = tmp;
+    }
+    if (p1.y > p2.y) {
+        tmp = p1;
+        p1 = p2;
+        p2 = tmp;
+    }
+    if (p0.y > p1.y) {
+        tmp = p0;
+        p0 = p1;
+        p1 = tmp;
+    }
+
+    if (p0.y == p1.y) {
+        draw_top_flat_triangle_gradient(ctx, p0, p1, p2, c0, c1, c2);
+    } else if (p1.y == p2.y) {
+        draw_botton_flat_triangle_gradient(ctx, p0, p1, p2, c0, c1, c2);
+    } else {
+        double k = (p0.y - p2.y) / (p0.x - p2.x);
+        double b = p0.y - k * p0.x;
+        
+        double x = isfinite(k) ? (p1.y - b) / k : p0.x;
+
+        Vec2 p3 = {x, p1.y};
+
+        draw_botton_flat_triangle_gradient(ctx, p0, p1, p3, c0, c1, c2);
+        draw_top_flat_triangle_gradient(ctx, p1, p3, p2, c0, c1, c2);
     }
 }
 
@@ -254,7 +357,7 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
         Vec2 p2 = project(ctx, camera, t2);
         Vec2 p3 = project(ctx, camera, t3);
 
-        // draw_filled_polygon(ctx, p1, p2, p3, COLOR_RED);
-        draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
+        // draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
+        draw_triangle_gradient(ctx, p1, p2, p3, v1.color, v2.color, v3.color);
     }
 }

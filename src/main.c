@@ -8,7 +8,7 @@
 Vertex vertices[] = {
     {.position = (Vec3){-1, -1, -1}, .color = COLOR_RED},
     {.position = (Vec3){-1, -1,  1}, .color = COLOR_GREEN},
-    {.position = (Vec3){-1,  1,  1}, .color = COLOR_RED},
+    {.position = (Vec3){-1,  1,  1}, .color = COLOR_BLUE},
     {.position = (Vec3){-1,  1, -1}, .color = COLOR_BLUE},
     {.position = (Vec3){ 1, -1, -1}, .color = COLOR_GREEN},
     {.position = (Vec3){ 1, -1,  1}, .color = COLOR_BLUE},
@@ -18,17 +18,17 @@ Vertex vertices[] = {
 
 Face faces[] = {
     {0, 1, 2},
-    {0, 2, 3},
-    {0, 1, 5},
-    {0, 4, 5},
-    {1, 5, 6},
-    {1, 2, 6},
-    {0, 4, 7},
-    {0, 3, 7},
-    {2, 3, 7},
-    {2, 6, 7},
-    {4, 5, 6},
-    {4, 6, 7}
+    // {0, 2, 3},
+    // {0, 1, 5},
+    // {0, 4, 5},
+    // {1, 5, 6},
+    // {1, 2, 6},
+    // {0, 4, 7},
+    // {0, 3, 7},
+    // {2, 3, 7},
+    // {2, 6, 7},
+    // {4, 5, 6},
+    // {4, 6, 7}
 };
 
 int main(int argc, char* argv[]) {
@@ -36,10 +36,8 @@ int main(int argc, char* argv[]) {
     Init(&ctx);
 
     Camera camera = {.fov = 90, .position = (Vec3){-5, 0, 0}};
-    Object object = {.posistion = (Vec3){0, 0, -3}, .scale = (Vec3){2, 1, 1}};
-    Object object2 = {.posistion = (Vec3){0, 0, 2}, .scale = (Vec3){1, 2, 1}};
+    Object object = {.posistion = (Vec3){0, 0, 0}, .scale = (Vec3){1, 1, 1}};
     init_mesh(&object.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
-    init_mesh(&object2.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
 
     InputState input = {0};
 
@@ -51,14 +49,10 @@ int main(int argc, char* argv[]) {
         clear(&ctx);
 
         draw_object(&camera, &ctx, &object);
-        draw_object(&camera, &ctx, &object2);
 
         render(&ctx);
 
         SDL_Delay(16);
-
-        object.rotation.z += 0.05;
-        object.rotation.y -= 0.05;
     }
 
     Term(&ctx);
