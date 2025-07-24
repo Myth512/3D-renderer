@@ -36,8 +36,8 @@ int main(int argc, char* argv[]) {
     Init(&ctx);
 
     Camera camera = {.fov = 90, .position = (Vec3){-5, 0, 0}};
-    Object object = {.posistion = (Vec3){0, 0, -3}};
-    Object object2 = {.posistion = (Vec3){0, 0, 2}};
+    Object object = {.posistion = (Vec3){0, 0, -3}, .scale = (Vec3){2, 1, 1}};
+    Object object2 = {.posistion = (Vec3){0, 0, 2}, .scale = (Vec3){1, 2, 1}};
     init_mesh(&object.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
     init_mesh(&object2.mesh, vertices, faces, sizeof(faces) / sizeof(Face));
 

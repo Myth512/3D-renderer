@@ -260,16 +260,29 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
         Vertex v3 = object->mesh.vertices[object->mesh.faces[i].v3];
 
         Vec3 t1 = v1.position;
+        Vec3 t2 = v2.position;
+        Vec3 t3 = v3.position;
+
+        t1.x *= object->scale.x;
+        t1.y *= object->scale.y;
+        t1.z *= object->scale.z;
+
+        t2.x *= object->scale.x;
+        t2.y *= object->scale.y;
+        t3.z *= object->scale.z;
+
+        t3.x *= object->scale.x;
+        t3.y *= object->scale.y;
+        t3.z *= object->scale.z;
+
         t1 = rotate_x(t1, object->rotation.x);
         t1 = rotate_y(t1, object->rotation.y);
         t1 = rotate_z(t1, object->rotation.z);
 
-        Vec3 t2 = v2.position;
         t2 = rotate_x(t2, object->rotation.x);
         t2 = rotate_y(t2, object->rotation.y);
         t2 = rotate_z(t2, object->rotation.z);
 
-        Vec3 t3 = v3.position;
         t3 = rotate_x(t3, object->rotation.x);
         t3 = rotate_y(t3, object->rotation.y);
         t3 = rotate_z(t3, object->rotation.z);
