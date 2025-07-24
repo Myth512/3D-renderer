@@ -129,7 +129,6 @@ Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
 
     double x = rel.z / rel.x * fx;
     double y = rel.y / rel.x * fy;
-    printf("here1 %f\n", rel.x);
 
     x = (x + 1) * 0.5 * ctx->width;
     y = (y + 1) * 0.5 * ctx->height;
@@ -270,5 +269,4 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
 
         draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
     }
-
 }

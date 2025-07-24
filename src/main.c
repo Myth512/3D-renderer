@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
         render(&ctx);
 
-        SDL_Delay(33);
+        SDL_Delay(16);
     }
 
     Term(&ctx);
