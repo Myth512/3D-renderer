@@ -7,16 +7,6 @@
 #include "camera.h"
 
 
-static double min(double a, double b) {
-    return a < b ? a : b;
-}
-
-
-static double max(double a, double b) {
-    return a > b ? a : b;
-}
-
-
 void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c) {
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
@@ -70,7 +60,6 @@ void draw_line_gradient(Context *ctx, Vec2 p0, Vec2 p1, Color c0, Color c1) {
             y = p1.y;
         }
 
-
         for (double x = p0.x; x <= p1.x; x++) {
             double p = (x - p0.x) / (p1.x - p0.x);
             Color c = Color_add(Color_mul(c0, p), Color_mul(c1, (1 - p)));
@@ -103,15 +92,6 @@ double deg_to_rad(double angle) {
 }
 
 
-
-
-double interpolate(double x, double x0, double x1, double y0, double y1) {
-    double t = y1 - y0;
-    double p = (x - x0) / (x1 - x0);
-    return y0 + t * p;
-}
-
-
 Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
     Vec3 rel = Vec3_sub(point, camera->position);
     rel = rotate_y(rel, -camera->rotation.x);
@@ -140,27 +120,6 @@ void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count) {
     mesh->face_count = face_count;
     mesh->vertices = vertices; 
     mesh->faces = faces; 
-}
-
-
-void draw_background(Camera *camera, Context *ctx) {
-    Color sky_color = (Color){117, 187, 254};
-    Color floor_color = (Color){37, 37, 37};
-
-    double angle = atan(camera->rotation.y);
-    double pos = (angle + 1) * 480 / 2;
-
-    for (int y = 0; y < pos; y++) {
-        for (int x = 0; x <= 640; x++) {
-            draw_pixel(ctx, x, y, sky_color);
-        }
-    }
-
-    for (int y = pos; y < 480; y++) {
-        for (int x = 0; x < 640; x++) {
-            draw_pixel(ctx, x, y, floor_color);
-        }
-    }
 }
 
 
@@ -287,7 +246,7 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
         t3 = rotate_y(t3, object->rotation.y);
         t3 = rotate_z(t3, object->rotation.z);
 
-        t1 = Vec3_add(t1,  object->posistion);
+        t1 = Vec3_add(t1, object->posistion);
         t2 = Vec3_add(t2, object->posistion);
         t3 = Vec3_add(t3, object->posistion);
 
