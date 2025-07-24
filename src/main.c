@@ -50,8 +50,8 @@ int main(int argc, char* argv[]) {
 
         clear(&ctx);
 
-        render_object(&camera, &ctx, &object);
-        render_object(&camera, &ctx, &object2);
+        draw_object(&camera, &ctx, &object);
+        draw_object(&camera, &ctx, &object2);
 
         render(&ctx);
 

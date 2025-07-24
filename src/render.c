@@ -33,7 +33,7 @@ void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c) {
         }
 
         for (double x = p0.x; x <= p1.x; x++) {
-            set_pixel(ctx, x, y, c);
+            draw_pixel(ctx, x, y, c);
             y += k;
         }
     } else {
@@ -48,7 +48,7 @@ void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c) {
         }
 
         for (double y = p0.y; y <= p1.y; y++) {
-            set_pixel(ctx, x, y, c);
+            draw_pixel(ctx, x, y, c);
             x += k;
         }
     }
@@ -74,7 +74,7 @@ void draw_line_gradient(Context *ctx, Vec2 p0, Vec2 p1, Color c0, Color c1) {
         for (double x = p0.x; x <= p1.x; x++) {
             double p = (x - p0.x) / (p1.x - p0.x);
             Color c = Color_add(Color_mul(c0, p), Color_mul(c1, (1 - p)));
-            set_pixel(ctx, x, y, c);
+            draw_pixel(ctx, x, y, c);
             y += k;
         }
     } else {
@@ -91,7 +91,7 @@ void draw_line_gradient(Context *ctx, Vec2 p0, Vec2 p1, Color c0, Color c1) {
         for (double y = p0.y; y <= p1.y; y++) {
             double p = (y - p0.y) / (p1.y - p0.y);
             Color c = Color_add(Color_mul(c0, p), Color_mul(c1, (1 - p)));
-            set_pixel(ctx, x, y, c);
+            draw_pixel(ctx, x, y, c);
             x += k;
         }
     }
@@ -144,7 +144,7 @@ void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count) {
 }
 
 
-void render_background(Camera *camera, Context *ctx) {
+void draw_background(Camera *camera, Context *ctx) {
     Color sky_color = (Color){117, 187, 254};
     Color floor_color = (Color){37, 37, 37};
 
@@ -153,21 +153,19 @@ void render_background(Camera *camera, Context *ctx) {
 
     for (int y = 0; y < pos; y++) {
         for (int x = 0; x <= 640; x++) {
-            set_pixel(ctx, x, y, sky_color);
+            draw_pixel(ctx, x, y, sky_color);
         }
     }
 
     for (int y = pos; y < 480; y++) {
         for (int x = 0; x < 640; x++) {
-            set_pixel(ctx, x, y, floor_color);
+            draw_pixel(ctx, x, y, floor_color);
         }
     }
-
-
 }
 
 
-void render_polygon_outline(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+void draw_polygon_outline(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
     draw_line(ctx, p0, p1, c);
     draw_line(ctx, p0, p2, c);
     draw_line(ctx, p1, p2, c);
@@ -189,7 +187,7 @@ static void draw_top_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Colo
 
     for (int y = p2.y; y > p0.y; y--) {
         for (int x = x_left; x <= x_right; x++) {
-            set_pixel(ctx, x, y, c);
+            draw_pixel(ctx, x, y, c);
         }
         x_left -= k0;
         x_right -= k1;
@@ -212,7 +210,7 @@ static void draw_botton_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, C
 
     for (int y = p0.y; y < p2.y; y++) {
         for (int x = x_left; x <= x_right; x++) {
-            set_pixel(ctx, x, y, c);
+            draw_pixel(ctx, x, y, c);
         }
         x_left += k0;
         x_right += k1;
@@ -220,7 +218,7 @@ static void draw_botton_flat_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, C
 }
 
 
-void render_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
+void draw_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
     Vec2 tmp;
     if (p0.y > p1.y) {
         tmp = p0;
@@ -256,7 +254,7 @@ void render_filled_polygon(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
 }
 
 
-void render_object(Camera *camera, Context *ctx, Object *object) {
+void draw_object(Camera *camera, Context *ctx, Object *object) {
     for (int i = 0; i < object->mesh.face_count; i++) {
         Vertex v1 = object->mesh.vertices[object->mesh.faces[i].v1];
         Vertex v2 = object->mesh.vertices[object->mesh.faces[i].v2];
@@ -270,11 +268,7 @@ void render_object(Camera *camera, Context *ctx, Object *object) {
         Vec2 p2 = project(ctx, camera, t2);
         Vec2 p3 = project(ctx, camera, t3);
 
-        // render_filled_polygon(ctx, p1, p2, p3, v1.color);
-        render_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
-        // draw_line_gradient(ctx, p1, p2, v1.color, v2.color);
-        // draw_line_gradient(ctx, p1, p3, v1.color, v3.color);
-        // draw_line_gradient(ctx, p2, p3, v2.color, v3.color);
+        draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
     }
 
 }

@@ -15,6 +15,6 @@ void clear(Context *ctx);
 
 void render(Context *ctx);
 
-void set_pixel(Context *ctx, double x, double y, Color c);
+void draw_pixel(Context *ctx, double x, double y, Color c);
 
 #endif
