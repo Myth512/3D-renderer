@@ -259,14 +259,30 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
         Vertex v2 = object->mesh.vertices[object->mesh.faces[i].v2];
         Vertex v3 = object->mesh.vertices[object->mesh.faces[i].v3];
 
-        Vec3 t1 = Vec3_add(v1.position,  object->posistion);
-        Vec3 t2 = Vec3_add(v2.position, object->posistion);
-        Vec3 t3 = Vec3_add(v3.position, object->posistion);
+        Vec3 t1 = v1.position;
+        t1 = rotate_x(t1, object->rotation.x);
+        t1 = rotate_y(t1, object->rotation.y);
+        t1 = rotate_z(t1, object->rotation.z);
+
+        Vec3 t2 = v2.position;
+        t2 = rotate_x(t2, object->rotation.x);
+        t2 = rotate_y(t2, object->rotation.y);
+        t2 = rotate_z(t2, object->rotation.z);
+
+        Vec3 t3 = v3.position;
+        t3 = rotate_x(t3, object->rotation.x);
+        t3 = rotate_y(t3, object->rotation.y);
+        t3 = rotate_z(t3, object->rotation.z);
+
+        t1 = Vec3_add(t1,  object->posistion);
+        t2 = Vec3_add(t2, object->posistion);
+        t3 = Vec3_add(t3, object->posistion);
 
         Vec2 p1 = project(ctx, camera, t1);
         Vec2 p2 = project(ctx, camera, t2);
         Vec2 p3 = project(ctx, camera, t3);
 
+        // draw_filled_polygon(ctx, p1, p2, p3, COLOR_RED);
         draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
     }
 }

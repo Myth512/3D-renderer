@@ -56,6 +56,9 @@ int main(int argc, char* argv[]) {
         render(&ctx);
 
         SDL_Delay(16);
+
+        object.rotation.z += 0.05;
+        object.rotation.y -= 0.05;
     }
 
     Term(&ctx);

@@ -22,4 +22,6 @@ Vec3 rotate_y(Vec3 point, double angle);
 
 Vec3 rotate_z(Vec3 point, double angle);
 
+Vec3 rotate(Vec3 point, double x, double y, double z);
+
 #endif

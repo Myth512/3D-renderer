@@ -3,7 +3,8 @@
 
 #include "vec.h"
 
-typedef struct { Vec3 position;
+typedef struct {
+    Vec3 position;
     Color color;
 } Vertex;
 
