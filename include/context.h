@@ -6,6 +6,7 @@
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    double *depth_buffer;
     int height;
     int width;
 } Context;

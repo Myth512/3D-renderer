@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "sdl_wrapper.h"
 #include <stdio.h>
 
@@ -21,6 +22,11 @@ int Init(Context *ctx) {
     ctx->renderer = SDL_CreateRenderer(ctx->window, NULL);
     if (!ctx->renderer) {
         SDL_Log("SDL_CreateRenderer() Error: ", SDL_GetError());
+        return 0;
+    }
+    ctx->depth_buffer = malloc(ctx->height * ctx->width * sizeof(double));
+    if (!ctx->depth_buffer) {
+        SDL_Log("Error allocating depth buffer");
         return 0;
     }
     return 1;
@@ -72,6 +78,11 @@ void process_events(InputState *input) {
 void clear(Context *ctx) {
     SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
     SDL_RenderClear(ctx->renderer);
+    for (int y = 0; y < ctx->height; y++) {
+        for (int x = 0; x < ctx->width; x++) {
+            ctx->depth_buffer[y * ctx->width + x] = 1000;
+        }
+    }
 }
 
 

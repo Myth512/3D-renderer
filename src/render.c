@@ -92,13 +92,13 @@ double deg_to_rad(double angle) {
 }
 
 
-Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
+Vec3 project(Context *ctx, Camera *camera, Vec3 point) {
     Vec3 rel = Vec3_sub(point, camera->position);
     rel = rotate_y(rel, -camera->rotation.x);
     rel = rotate_z(rel, camera->rotation.y);
 
     if (rel.x < 0)
-        return (Vec2){-1, -1};
+        return (Vec3){-1, -1, rel.x};
 
     double fov_rad = deg_to_rad(camera->fov);
 
@@ -112,7 +112,7 @@ Vec2 project(Context *ctx, Camera *camera, Vec3 point) {
 
     x = (x + 1) * 0.5 * ctx->width;
     y = (y + 1) * 0.5 * ctx->height;
-    return (Vec2){x, y};
+    return (Vec3){x, y, rel.x};
 }
 
 
@@ -221,7 +221,7 @@ void draw_filled_triangle(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c) {
 }
 
 
-static void draw_top_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
+static void draw_top_flat_triangle_gradient(Context *ctx, Vec3 p0, Vec3 p1, Vec3 p2, Color c0, Color c1, Color c2) {
     double k0 = (p2.x - p0.x) / (p2.y - p0.y);
     double k1 = (p2.x - p1.x) / (p2.y - p1.y);
 
@@ -236,13 +236,18 @@ static void draw_top_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2
 
     for (int y = p2.y; y >= p0.y; y--) {
         for (int x = x_left; x <= x_right; x++) {
-            Vec3 w = compute_barycentric_weights((Vec2){x, y}, p0, p1, p2);
+            Vec3 w = compute_barycentric_weights((Vec2){x, y}, (Vec2){p0.x, p0.y}, (Vec2){p1.x, p1.y}, (Vec2){p2.x, p2.y});
             Color c = {
                 c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
                 c.g = c0.g * w.x + c1.g * w.y + c2.g * w.z,
                 c.b = c0.b * w.x + c1.b * w.y + c2.b * w.z,
             };
-            draw_pixel(ctx, x, y, c);
+            double z = p0.z * w.x + p1.z * w.y + p2.z * w.z;
+
+            if (z < ctx->depth_buffer[y * ctx->width + x]) {
+                draw_pixel(ctx, x, y, c);
+                ctx->depth_buffer[y * ctx->width + x] = z;
+            }
         }
         x_left -= k0;
         x_right -= k1;
@@ -250,7 +255,7 @@ static void draw_top_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2
 }
 
 
-static void draw_botton_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
+static void draw_botton_flat_triangle_gradient(Context *ctx, Vec3 p0, Vec3 p1, Vec3 p2, Color c0, Color c1, Color c2) {
     double k0 = (p0.x - p1.x) / (p0.y - p1.y);
     double k1 = (p0.x - p2.x) / (p0.y - p2.y);
 
@@ -270,13 +275,18 @@ static void draw_botton_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, V
         for (int x = x_left; x <= x_right; x++) {
             if (x < x_min || x > x_max)
                 continue;
-            Vec3 w = compute_barycentric_weights((Vec2){x, y}, p0, p1, p2);
+            Vec3 w = compute_barycentric_weights((Vec2){x, y}, (Vec2){p0.x, p0.y}, (Vec2){p1.x, p1.y}, (Vec2){p2.x, p2.y});
             Color c = {
                 c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
                 c.g = c0.g * w.x + c1.g * w.y + c2.g * w.z,
                 c.b = c0.b * w.x + c1.b * w.y + c2.b * w.z,
             };
-            draw_pixel(ctx, x, y, c);
+            double z = p0.z * w.x + p1.z * w.y + p2.z * w.z;
+
+            if (z < ctx->depth_buffer[y * ctx->width + x]) {
+                draw_pixel(ctx, x, y, c);
+                ctx->depth_buffer[y * ctx->width + x] = z;
+            }
         }
         x_left += k0;
         x_right += k1;
@@ -284,8 +294,8 @@ static void draw_botton_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, V
 }
 
 
-void draw_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
-    Vec2 tmp;
+void draw_triangle_gradient(Context *ctx, Vec3 p0, Vec3 p1, Vec3 p2, Color c0, Color c1, Color c2) {
+    Vec3 tmp;
     Color t;
     if (p0.y > p1.y) {
         tmp = p0;
@@ -324,8 +334,9 @@ void draw_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, C
         double p = (p1.y - p2.y) / (p0.y - p2.y);
         
         double x = p0.x * p + p2.x * (1 - p);
+        double z = p0.z * p + p2.z * (1 - p);
 
-        Vec2 p3 = {x, p1.y};
+        Vec3 p3 = {x, p1.y, z};
 
         Color c3 = {
             c0.r * p + c2.r * (1 - p),
@@ -377,9 +388,10 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
         t2 = Vec3_add(t2, object->posistion);
         t3 = Vec3_add(t3, object->posistion);
 
-        Vec2 p1 = project(ctx, camera, t1);
-        Vec2 p2 = project(ctx, camera, t2);
-        Vec2 p3 = project(ctx, camera, t3);
+        Vec3 p1 = project(ctx, camera, t1);
+        Vec3 p2 = project(ctx, camera, t2);
+        Vec3 p3 = project(ctx, camera, t3);
+        // printf("%f %f %f %d\n", p2.x, p2.y, p2.z, v2.color.r);
 
         draw_triangle_gradient(ctx, p1, p2, p3, v1.color, v2.color, v3.color);
         // draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);

@@ -29,7 +29,7 @@ typedef struct {
 
 void draw_line(Context *ctx, Vec2 p0, Vec2 p1, Color c);
 
-Vec2 project(Context *ctx, Camera *camera, Vec3 point);
+Vec3 project(Context *ctx, Camera *camera, Vec3 point);
 
 void init_mesh(Mesh *mesh, Vertex *vertices, Face *faces, int face_count);
 

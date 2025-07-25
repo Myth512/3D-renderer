@@ -9,11 +9,11 @@ Vertex vertices[] = {
     {.position = (Vec3){-1, -1, -1}, .color = COLOR_RED},
     {.position = (Vec3){-1, -1,  1}, .color = COLOR_GREEN},
     {.position = (Vec3){-1,  1,  1}, .color = COLOR_BLUE},
-    {.position = (Vec3){-1,  1, -1}, .color = COLOR_BLUE},
-    {.position = (Vec3){ 1, -1, -1}, .color = COLOR_GREEN},
-    {.position = (Vec3){ 1, -1,  1}, .color = COLOR_BLUE},
-    {.position = (Vec3){ 1,  1,  1}, .color = COLOR_GREEN},
-    {.position = (Vec3){ 1,  1, -1}, .color = COLOR_GREEN}
+    {.position = (Vec3){-1,  1, -1}, .color = COLOR_MAGENTA},
+    {.position = (Vec3){ 1, -1, -1}, .color = COLOR_YELLOW},
+    {.position = (Vec3){ 1, -1,  1}, .color = COLOR_WHITE},
+    {.position = (Vec3){ 1,  1,  1}, .color = COLOR_CYAN},
+    {.position = (Vec3){ 1,  1, -1}, .color = COLOR_BLUE}
 };
 
 Face faces[] = {
@@ -53,6 +53,9 @@ int main(int argc, char* argv[]) {
         render(&ctx);
 
         SDL_Delay(16);
+
+        object.rotation.y += 0.05;
+        object.rotation.z -= 0.05;
     }
 
     Term(&ctx);
