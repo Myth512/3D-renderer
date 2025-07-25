@@ -234,7 +234,7 @@ static void draw_top_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2
     double x_left = p2.x;
     double x_right = p2.x;
 
-    for (int y = p2.y; y > p0.y; y--) {
+    for (int y = p2.y; y >= p0.y; y--) {
         for (int x = x_left; x <= x_right; x++) {
             Vec3 w = compute_barycentric_weights((Vec2){x, y}, p0, p1, p2);
             Color c = {
@@ -260,11 +260,16 @@ static void draw_botton_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, V
         k1 = tmp;
     }
 
+    double x_min = fmin(fmin(p0.x, p1.x), p2.x);
+    double x_max = fmax(fmax(p0.x, p1.x), p2.x);
+
     double x_left = p0.x;
     double x_right = p0.x;
 
-    for (int y = p0.y; y < p2.y; y++) {
+    for (int y = p0.y; y <= p2.y; y++) {
         for (int x = x_left; x <= x_right; x++) {
+            if (x < x_min || x > x_max)
+                continue;
             Vec3 w = compute_barycentric_weights((Vec2){x, y}, p0, p1, p2);
             Color c = {
                 c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
@@ -376,7 +381,7 @@ void draw_object(Camera *camera, Context *ctx, Object *object) {
         Vec2 p2 = project(ctx, camera, t2);
         Vec2 p3 = project(ctx, camera, t3);
 
-        // draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
         draw_triangle_gradient(ctx, p1, p2, p3, v1.color, v2.color, v3.color);
+        // draw_polygon_outline(ctx, p1, p2, p3, COLOR_CYAN);
     }
 }
