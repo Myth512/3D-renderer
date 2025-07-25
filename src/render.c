@@ -281,26 +281,40 @@ static void draw_botton_flat_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, V
 
 void draw_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, Color c1, Color c2) {
     Vec2 tmp;
+    Color t;
     if (p0.y > p1.y) {
         tmp = p0;
         p0 = p1;
         p1 = tmp;
+
+        t = c0;
+        c0 = c1;
+        c1 = t;
+
     }
     if (p1.y > p2.y) {
         tmp = p1;
         p1 = p2;
         p2 = tmp;
+
+        t = c1;
+        c1 = c2;
+        c2 = t;
     }
     if (p0.y > p1.y) {
         tmp = p0;
         p0 = p1;
         p1 = tmp;
+
+        t = c0;
+        c0 = c1;
+        c1 = t;
     }
 
     if (p0.y == p1.y) {
         draw_top_flat_triangle_gradient(ctx, p0, p1, p2, c0, c1, c2);
     } else if (p1.y == p2.y) {
-        draw_botton_flat_triangle_gradient(ctx, p0, p1, p2, c0, c1, c2);
+        draw_botton_flat_triangle_gradient(ctx, p0, p2, p1, c0, c1, c2);
     } else {
         double k = (p0.y - p2.y) / (p0.x - p2.x);
         double b = p0.y - k * p0.x;
@@ -309,8 +323,9 @@ void draw_triangle_gradient(Context *ctx, Vec2 p0, Vec2 p1, Vec2 p2, Color c0, C
 
         Vec2 p3 = {x, p1.y};
 
-        draw_botton_flat_triangle_gradient(ctx, p0, p1, p3, c0, c1, c2);
-        draw_top_flat_triangle_gradient(ctx, p1, p3, p2, c0, c1, c2);
+
+        draw_botton_flat_triangle_gradient(ctx, p0, p3, p1, c0, c2, c1);
+        draw_top_flat_triangle_gradient(ctx, p3, p1, p2, c0, c1, c2);
     }
 }
 
