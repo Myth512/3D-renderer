@@ -236,6 +236,9 @@ static void draw_top_flat_triangle_gradient(Context *ctx, Vec3 p0, Vec3 p1, Vec3
 
     for (int y = p2.y; y >= p0.y; y--) {
         for (int x = x_left; x <= x_right; x++) {
+            if (x < 0 || x >= ctx->width || y < 0 || y >= ctx->height)
+                continue;
+
             Vec3 w = compute_barycentric_weights((Vec2){x, y}, (Vec2){p0.x, p0.y}, (Vec2){p1.x, p1.y}, (Vec2){p2.x, p2.y});
             Color c = {
                 c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
@@ -273,8 +276,12 @@ static void draw_botton_flat_triangle_gradient(Context *ctx, Vec3 p0, Vec3 p1, V
 
     for (int y = p0.y; y <= p2.y; y++) {
         for (int x = x_left; x <= x_right; x++) {
+            if (x < 0 || x >= ctx->width || y < 0 || y >= ctx->height)
+                continue;
+
             if (x < x_min || x > x_max)
                 continue;
+
             Vec3 w = compute_barycentric_weights((Vec2){x, y}, (Vec2){p0.x, p0.y}, (Vec2){p1.x, p1.y}, (Vec2){p2.x, p2.y});
             Color c = {
                 c.r = c0.r * w.x + c1.r * w.y + c2.r * w.z,
